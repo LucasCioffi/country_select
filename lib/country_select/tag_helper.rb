@@ -2,19 +2,8 @@ module CountrySelect
   class CountryNotFoundError < StandardError;end
   module TagHelper
     def country_option_tags
-      # In Rails 5.2+, `value` accepts no arguments and must also be called
-      # called with parens to avoid the local variable of the same name
-      # https://github.com/rails/rails/pull/29791
-      selected_option = @options.fetch(:selected) do
-        if self.method(:value).arity == 0
-          value()
-        else
-          value(@object)
-        end
-      end
-
       option_tags_options = {
-        :selected => selected_option,
+        :selected => @options.fetch(:selected) { value },
         :disabled => @options[:disabled]
       }
 
@@ -100,11 +89,7 @@ module CountrySelect
         end
 
         if sorted
-          if country_list.respond_to?(:sort_alphabetical)
-            country_list.sort_alphabetical
-          else
-            country_list.sort
-          end
+          country_list.sort_alphabetical
         else
           country_list
         end
